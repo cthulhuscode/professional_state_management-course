@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface UseStatePros {
   name: string;
@@ -6,6 +6,17 @@ interface UseStatePros {
 
 export const UseState = ({ name }: UseStatePros) => {
   const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!loading) return;
+
+    console.log("effect");
+
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, [loading]);
 
   return (
     <div>
@@ -14,8 +25,17 @@ export const UseState = ({ name }: UseStatePros) => {
 
       {error && <p>Error: the code is invalid.</p>}
 
+      {loading && <p>Loading....</p>}
+
       <input type="text" name="code" id="code" />
-      <button onClick={() => setError(!error)}>Check</button>
+      <button
+        onClick={() => {
+          setError(!error);
+          setLoading(true);
+        }}
+      >
+        Check
+      </button>
     </div>
   );
 };
