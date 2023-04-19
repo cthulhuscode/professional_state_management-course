@@ -7,44 +7,52 @@ interface UseStatePros {
 }
 
 export const UseState = ({ name }: UseStatePros) => {
+  // Compound state
+  const [state, setState] = useState({
+    value: "",
+    error: false,
+    loading: false,
+  });
+
+  // Independent states
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!loading) return;
+    if (!state.loading) return;
 
     console.log("effect");
 
     setTimeout(() => {
-      if (value !== SECURITY_CODE) setError(true);
-
-      setLoading(false);
+      if (state.value !== SECURITY_CODE) {
+        setState({ ...state, error: true, loading: false });
+      } else setState({ ...state, error: false, loading: false });
     }, 2000);
-  }, [loading]);
+  }, [state.loading]);
 
   return (
     <div>
       <h2>Delete {name}</h2>
       <p>Please provide the security code. </p>
 
-      {error && !loading && <p>Error: the code is invalid.</p>}
+      {state.error && !state.loading && <p>Error: the code is invalid.</p>}
 
-      {loading && <p>Loading....</p>}
+      {state.loading && <p>Loading....</p>}
 
       <input
         type="text"
         name="code"
         id="code"
-        value={value}
+        value={state.value}
         onChange={(e: ChangeEvent<HTMLInputElement>) =>
-          setValue(e.target.value)
+          setState({ ...state, value: e.target.value })
         }
-        onFocus={() => setError(false)}
+        onFocus={() => setState({ ...state, error: false })}
       />
       <button
         onClick={() => {
-          setLoading(true);
+          setState({ ...state, loading: true });
         }}
       >
         Check
