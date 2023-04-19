@@ -1,12 +1,15 @@
 import { Component } from "react";
 import { Loading } from "../Loading/Loading";
 
+const SECURITY_CODE = "paradigma";
+
 interface ClassStateProps {
   name: string;
 }
 interface ClassStateState {
   error: boolean;
   loading: boolean;
+  value: string;
 }
 
 export class ClassState extends Component<ClassStateProps, ClassStateState> {
@@ -16,6 +19,7 @@ export class ClassState extends Component<ClassStateProps, ClassStateState> {
     this.state = {
       error: false,
       loading: false,
+      value: "",
     };
   }
 
@@ -37,28 +41,35 @@ export class ClassState extends Component<ClassStateProps, ClassStateState> {
     if (!this.state.loading) return;
 
     setTimeout(() => {
+      if (SECURITY_CODE !== this.state.value) this.setState({ error: true });
+      else this.setState({ error: false });
+
       this.setState({ loading: false });
     }, 2000);
   }
 
   render() {
     const { name } = this.props;
+    const { error, loading, value } = this.state;
 
     return (
       <div>
         <h2>Delete {name}</h2>
         <p>Please provide the security code. </p>
 
-        {this.state.error && <p>Error: the code is invalid.</p>}
-        {this.state.loading && <Loading />}
+        {error && !loading && <p>Error: the code is invalid.</p>}
+        {loading && <Loading />}
 
-        <input type="text" name="code" id="code" />
+        <input
+          type="text"
+          name="code"
+          id="code"
+          placeholder="Security code"
+          value={value}
+          onChange={(e) => this.setState({ value: e.target.value })}
+        />
         <button
           onClick={() => {
-            this.setState((prevState) => ({
-              error: !prevState.error,
-            }));
-
             this.setState({ loading: true });
           }}
         >
