@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, FocusEvent, useEffect, useState } from "react";
 
 const SECURITY_CODE = "paradigma";
 
@@ -21,6 +21,20 @@ export const UseState = ({ name }: UseStatePros) => {
   // const [error, setError] = useState(false);
   // const [loading, setLoading] = useState(false);
 
+  const onConfirm = () =>
+    setState({ ...state, error: false, loading: false, confirmed: true });
+  const onError = () => setState({ ...state, error: true, loading: false });
+  const onCheck = () => setState({ ...state, loading: true });
+  const onDelete = () => setState({ ...state, deleted: true, value: "" });
+  const onReset = () =>
+    setState({ ...state, confirmed: false, deleted: false, value: "" });
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) =>
+    setState({ ...state, value: e.target.value });
+
+  const handleFocus = (e: FocusEvent<HTMLInputElement>) =>
+    setState({ ...state, error: false });
+
   useEffect(() => {
     if (!state.loading) return;
 
@@ -28,9 +42,8 @@ export const UseState = ({ name }: UseStatePros) => {
 
     setTimeout(() => {
       if (state.value !== SECURITY_CODE) {
-        setState({ ...state, error: true, loading: false });
-      } else
-        setState({ ...state, error: false, loading: false, confirmed: true });
+        onError();
+      } else onConfirm();
     }, 2000);
   }, [state.loading]);
 
@@ -49,18 +62,10 @@ export const UseState = ({ name }: UseStatePros) => {
           name="code"
           id="code"
           value={state.value}
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setState({ ...state, value: e.target.value })
-          }
-          onFocus={() => setState({ ...state, error: false })}
+          onChange={handleChange}
+          onFocus={handleFocus}
         />
-        <button
-          onClick={() => {
-            setState({ ...state, loading: true });
-          }}
-        >
-          Check
-        </button>
+        <button onClick={onCheck}>Check</button>
       </div>
     );
   } else if (state.confirmed && !state.deleted) {
@@ -68,18 +73,8 @@ export const UseState = ({ name }: UseStatePros) => {
       <div>
         <h2>Delete {name}</h2>
         <p>Are you sure of deleting it?</p>
-        <button
-          onClick={() => setState({ ...state, deleted: true, value: "" })}
-        >
-          Yes, delete it
-        </button>{" "}
-        <button
-          onClick={() =>
-            setState({ ...state, confirmed: false, deleted: false })
-          }
-        >
-          No, cancel
-        </button>
+        <button onClick={onDelete}>Yes, delete it</button>{" "}
+        <button onClick={onReset}>No, cancel</button>
       </div>
     );
   } else {
@@ -87,13 +82,7 @@ export const UseState = ({ name }: UseStatePros) => {
       <div>
         <p>Deleted successfully!</p>
 
-        <button
-          onClick={() =>
-            setState({ ...state, deleted: false, confirmed: false })
-          }
-        >
-          Recover it
-        </button>
+        <button onClick={onReset}>Recover it</button>
       </div>
     );
   }
