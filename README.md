@@ -6,5 +6,5 @@ This course allowed me to learn about:
 2. Lifecycle methods in Class Components
 3. Lifecycle methods compared to Hooks
 4. Independent, Compound and Derived states
-5. Imperative, Semi-declarative and declarative code in React
+5. Imperative, Semi-declarative and Declarative code in React
 6. useReducer
